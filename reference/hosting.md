@@ -20,6 +20,56 @@ Produces an `out/` directory of plain HTML, CSS, and JS. No server required.
 
 **DNS**: the custom domain points to the CloudFront distribution via a Route 53 A (Alias) record.
 
+## GitHub Actions deploy role
+
+The [deploy workflow](../.github/workflows/deploy.yml) authenticates to AWS via OIDC rather than long-lived access keys. It assumes an IAM role; GitHub exchanges a short-lived OIDC token for temporary AWS credentials at run time.
+
+**Trust policy** — allows GitHub Actions to assume the role, scoped to this repo:
+
+```json
+{
+  "Effect": "Allow",
+  "Principal": {
+    "Federated": "arn:aws:iam::YOUR-ACCOUNT-ID:oidc-provider/token.actions.githubusercontent.com"
+  },
+  "Action": "sts:AssumeRoleWithWebIdentity",
+  "Condition": {
+    "StringEquals": {
+      "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+    },
+    "StringLike": {
+      "token.actions.githubusercontent.com:sub": "repo:YOUR-ORG/wiki-website:*"
+    }
+  }
+}
+```
+
+**Permission policy** — the minimum permissions the role needs:
+
+```json
+{
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:PutObject", "s3:DeleteObject"],
+      "Resource": "arn:aws:s3:::YOUR-BUCKET/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::YOUR-BUCKET"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "cloudfront:CreateInvalidation",
+      "Resource": "arn:aws:cloudfront::YOUR-ACCOUNT-ID:distribution/YOUR-DIST-ID"
+    }
+  ]
+}
+```
+
+The role ARN is stored as the `AWS_ROLE_ARN` secret in the GitHub repo. The OIDC provider (`token.actions.githubusercontent.com`) is added to IAM → Identity providers in your AWS account.
+
 ## Deploying
 
 ```bash
