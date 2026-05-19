@@ -45,11 +45,15 @@ Markdown files use relative links like `[Memory](concepts/memory.md)` and `[log.
 
 ## Navigation Sidebar
 
-Built at build time by scanning the agent-wiki directory tree. Sections correspond to top-level subdirectories (Concepts, Tools, Opinions, Questions). Top-level files (index, overview, log) appear above the sections.
-
-The sidebar is a React Server Component — it reads the filesystem once and renders a static `<nav>` tree. The active page is highlighted via the URL.
+Built at build time by scanning the agent-wiki directory tree. Sections correspond to top-level subdirectories; their order matches the order they appear in `index.md` (Concepts, Tools, Opinions, Questions). Top-level files (index, overview, log) appear above the sections.
 
 Page titles come from the first `# Heading` in the file (or the filename as a fallback).
+
+The sidebar is split into two components to satisfy Next.js Server/Client constraints:
+- `Sidebar.tsx` — Server Component. Reads the filesystem, builds the nav tree, passes it as props to `SidebarNav`.
+- `SidebarNav.tsx` — Client Component (`'use client'`). Receives the nav tree as props and uses `usePathname()` to highlight the active page.
+
+This keeps filesystem access on the server while allowing the active-link highlight to react to the current URL.
 
 ## Component Structure
 
@@ -62,9 +66,14 @@ lib/
   content.ts          — filesystem helpers: list all pages, read a page, build nav tree
   markdown.ts         — markdown-to-HTML pipeline (remark + link-rewriting plugin)
 components/
-  Sidebar.tsx         — navigation tree with active-page highlight
+  Sidebar.tsx         — Server Component; builds nav tree, passes to SidebarNav
+  SidebarNav.tsx      — Client Component; renders nav tree, highlights active page via usePathname()
   MarkdownContent.tsx — renders the HTML string, applies prose styles
 ```
+
+## Syntax Highlighting
+
+Code blocks are highlighted using `shiki`. It runs at build time inside the remark pipeline — a `remark-shiki` (or equivalent) step replaces fenced code blocks with pre-colored HTML before the page is emitted. No JavaScript is sent to the browser for highlighting.
 
 ## Styling
 
