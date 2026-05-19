@@ -68,7 +68,9 @@ The [deploy workflow](../.github/workflows/deploy.yml) authenticates to AWS via 
 }
 ```
 
-The role ARN is stored as the `AWS_ROLE_ARN` secret in the GitHub repo. The OIDC provider (`token.actions.githubusercontent.com`) is added to IAM → Identity providers in your AWS account.
+The role ARN is stored as the `AWS_ROLE_ARN` secret in the GitHub repo.
+
+The OIDC provider (`token.actions.githubusercontent.com`) is added to IAM → Identity providers in your AWS account.
 
 ## Deploying
 
