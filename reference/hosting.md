@@ -38,7 +38,7 @@ The [deploy workflow](../.github/workflows/deploy.yml) authenticates to AWS via 
       "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
     },
     "StringLike": {
-      "token.actions.githubusercontent.com:sub": "repo:YOUR-ORG/wiki-website:*"
+      "token.actions.githubusercontent.com:sub": "repo:YOUR-ORG/agent-wiki-website:*"
     }
   }
 }
