@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 interface RenderedNewsletter {
   slug: string;
   date: string;
@@ -17,7 +19,7 @@ export function NewsletterFeed({ newsletters }: { newsletters: RenderedNewslette
               dangerouslySetInnerHTML={{ __html: newsletter.html }}
             />
             <p className="text-sm mt-4">
-              <a href={newsletter.href} className="text-gray-400 hover:text-gray-700">Permalink →</a>
+              <Link href={newsletter.href} className="text-gray-400 hover:text-gray-700">Permalink →</Link>
             </p>
           </article>
           {i < newsletters.length - 1 && <hr className="my-10 border-gray-200" />}
