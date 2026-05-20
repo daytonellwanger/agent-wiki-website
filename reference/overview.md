@@ -23,6 +23,7 @@ agent-wiki/
   tools/
   opinions/
   questions/
+  newsletters/
   log.md
 ```
 

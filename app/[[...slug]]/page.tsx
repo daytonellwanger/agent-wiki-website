@@ -1,6 +1,7 @@
-import { getAllSlugs, getPage } from '@/lib/content';
+import { getAllSlugs, getPage, getRecentNewsletters } from '@/lib/content';
 import { markdownToHtml } from '@/lib/markdown';
 import { MarkdownContent } from '@/components/MarkdownContent';
+import { NewsletterFeed } from '@/components/NewsletterFeed';
 import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
@@ -26,6 +27,20 @@ export default async function Page({
   params: Promise<{ slug?: string[] }>;
 }) {
   const { slug } = await params;
+
+  if ((slug ?? []).length === 0) {
+    const newsletters = getRecentNewsletters(5);
+    const rendered = await Promise.all(
+      newsletters.map(async n => ({
+        slug: n.slug,
+        date: n.date,
+        href: n.href,
+        html: await markdownToHtml(n.content),
+      }))
+    );
+    return <NewsletterFeed newsletters={rendered} />;
+  }
+
   const page = getPage(slug ?? []);
 
   if (!page) notFound();

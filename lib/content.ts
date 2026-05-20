@@ -66,6 +66,37 @@ export interface NavTree {
   sections: NavSection[];
 }
 
+export interface Newsletter {
+  slug: string;
+  date: string;
+  href: string;
+  content: string;
+}
+
+function formatNewsletterDate(stem: string): string {
+  const [y, m, d] = stem.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+    month: 'long', day: 'numeric', year: 'numeric',
+  });
+}
+
+export function getRecentNewsletters(n: number): Newsletter[] {
+  const newsletterDir = path.join(WIKI_DIR, 'newsletters');
+  if (!fs.existsSync(newsletterDir)) return [];
+
+  const files = fs.readdirSync(newsletterDir)
+    .filter(f => f.endsWith('.md'))
+    .sort()
+    .reverse()
+    .slice(0, n);
+
+  return files.map(file => {
+    const stem = file.slice(0, -3);
+    const content = fs.readFileSync(path.join(newsletterDir, file), 'utf-8');
+    return { slug: stem, date: formatNewsletterDate(stem), href: `/newsletters/${stem}`, content };
+  });
+}
+
 export function getNavTree(): NavTree {
   // Determine section order from index.md headings
   const indexContent = fs.readFileSync(path.join(WIKI_DIR, 'index.md'), 'utf-8');
