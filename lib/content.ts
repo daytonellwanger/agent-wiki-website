@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 
-const WIKI_DIR = path.join(process.cwd(), '..', 'agent-wiki');
+const WIKI_DIR = path.join(process.cwd(), '..', 'agent-wiki-wiki');
 
 function extractTitle(content: string, fallback: string): string {
   const match = content.match(/^#\s+(.+)$/m);
