@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: git clone https://github.com/daytonellwanger/agent-wiki-wiki.git ../agent-wiki
+      - run: git clone https://github.com/daytonellwanger/agent-wiki-wiki.git ../agent-wiki-wiki
 
       - uses: actions/setup-node@v4
         with:
