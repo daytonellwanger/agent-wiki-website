@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Sidebar } from '@/components/Sidebar';
+import { MobileMenu } from '@/components/MobileMenu';
 
 export const metadata: Metadata = {
   title: 'Agent Wiki',
@@ -11,7 +12,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="flex flex-col h-screen bg-white text-gray-900">
-        <header className="shrink-0 border-b border-gray-200 px-4 h-12 flex items-center justify-end">
+        <header className="shrink-0 border-b border-gray-200 px-4 h-12 flex items-center justify-between">
+          <MobileMenu />
           <a
             href="https://github.com/daytonellwanger/agent-wiki"
             target="_blank"

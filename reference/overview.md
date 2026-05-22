@@ -50,9 +50,11 @@ Built at build time by scanning the agent-wiki directory tree. Sections correspo
 
 Page titles come from the first `# Heading` in the file (or the filename as a fallback).
 
-The sidebar is split into two components to satisfy Next.js Server/Client constraints:
-- `Sidebar.tsx` — Server Component. Reads the filesystem, builds the nav tree, passes it as props to `SidebarNav`.
-- `SidebarNav.tsx` — Client Component (`'use client'`). Receives the nav tree as props and uses `usePathname()` to highlight the active page.
+The navigation is split across four components to satisfy Next.js Server/Client constraints:
+- `Sidebar.tsx` — Server Component. Reads the filesystem, builds the nav tree, passes it as props to `SidebarNav`. Hidden on small screens (`hidden md:block`).
+- `MobileMenu.tsx` — Server Component. Same nav-tree build, passes it to `MobileMenuClient`. Rendered in the header.
+- `SidebarNav.tsx` — Client Component (`'use client'`). Receives the nav tree as props and uses `usePathname()` to highlight the active page. Used by both `Sidebar` and `MobileMenuClient`.
+- `MobileMenuClient.tsx` — Client Component. Renders the hamburger button and a slide-in drawer. Auto-closes via a `useEffect` on `usePathname()`.
 
 This keeps filesystem access on the server while allowing the active-link highlight to react to the current URL.
 
@@ -67,9 +69,11 @@ lib/
   content.ts          — filesystem helpers: list all pages, read a page, build nav tree
   markdown.ts         — markdown-to-HTML pipeline (remark + link-rewriting plugin)
 components/
-  Sidebar.tsx         — Server Component; builds nav tree, passes to SidebarNav
-  SidebarNav.tsx      — Client Component; renders nav tree, highlights active page via usePathname()
-  MarkdownContent.tsx — renders the HTML string, applies prose styles
+  Sidebar.tsx          — Server Component; builds nav tree, passes to SidebarNav (desktop only)
+  MobileMenu.tsx       — Server Component; builds nav tree, passes to MobileMenuClient (mobile only)
+  MobileMenuClient.tsx — Client Component; hamburger button + slide-in drawer
+  SidebarNav.tsx       — Client Component; renders nav tree, highlights active page via usePathname()
+  MarkdownContent.tsx  — renders the HTML string, applies prose styles
 ```
 
 ## Syntax Highlighting
@@ -78,7 +82,7 @@ Code blocks are highlighted using `shiki`. It runs at build time inside the rema
 
 ## Styling
 
-Tailwind CSS with the `@tailwindcss/typography` plugin (`prose` class) for markdown content. The layout is a fixed-width sidebar (e.g., 260px) with a scrollable content area filling the rest of the viewport.
+Tailwind CSS with the `@tailwindcss/typography` plugin (`prose` class) for markdown content. On desktop (`md` and up) the layout is a fixed-width sidebar (260px) with a scrollable content area filling the rest of the viewport. On smaller screens the sidebar is hidden and replaced by a hamburger menu in the header that opens a slide-in drawer.
 
 ## Build & Hosting
 
